@@ -1,70 +1,40 @@
 <?php
+
 namespace agendamento\especialidade;
+
 /**
- * [Description Especialidade]
+ * Modelo de Especialidade
  */
-class Especialidade {
+class Especialidade
+{
     private $id_especialidade;
     private $descricao;
 
+    public function getId_especialidade() { return $this->id_especialidade; }
+    public function getDescricao()        { return $this->descricao; }
 
-    /**
-     * Get the value of id_especialidade
-     */ 
-    public function getId_especialidade()
-    {
-        return $this->id_especialidade;
-    }
-
-    /**
-     * Set the value of id_especialidade
-     *
-     * @return  self
-     */ 
-    public function setId_especialidade($id_especialidade)
-    {
-        $this->id_especialidade = $id_especialidade;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of descricao
-     */ 
-    public function getDescricao()
-    {
-        return $this->descricao;
-    }
-
-    /**
-     * Set the value of descricao
-     *
-     * @return  self
-     */ 
-    public function setDescricao($descricao)
-    {
-        $this->descricao = $descricao;
-
-        return $this;
-    }
+    public function setId_especialidade($v) { $this->id_especialidade = $v; return $this; }
+    public function setDescricao($v)        { $this->descricao = $v;        return $this; }
 
     public function listar()
     {
         global $conexao;
         try {
-            $sql = "select * from especialidade where true";
             if ($this->id_especialidade) {
-                $sql .= ' and id_especialidade = ' . $this->id_especialidade;
+                $stmt = $conexao->prepare("SELECT * FROM especialidade WHERE id_especialidade = ?");
+                $stmt->bind_param('i', $this->id_especialidade);
+                $stmt->execute();
+                $recordset = $stmt->get_result();
+            } else {
+                $recordset = mysqli_query($conexao, "SELECT * FROM especialidade");
             }
-
-            $recordset = mysqli_query($conexao, $sql);
-            while($row = $recordset->fetch_assoc()) {
+            $dados = [];
+            while ($row = $recordset->fetch_assoc()) {
                 $dados[] = $row;
             }
-
             return $dados;
         } catch (\Throwable $th) {
-            //throw $th;
+            return [];
         }
     }
 
@@ -74,48 +44,47 @@ class Especialidade {
         if ($this->descricao == '') {
             $arrMsg[] = 'Informe a especialidade';
         }
-
         return $arrMsg;
     }
-    public function alterar()
-    {
-        global $conexao;
-        try {
-            $sql = "UPDATE especialidade 
-                    SET 
-                        id_especialidade = {$this->id_especialidade}
-                    WHERE id_especialidade = " . $this->id_especialidade;
-            mysqli_query($conexao, $sql);
-            return true;
-        } catch (\Throwable $th) {
-            print_pre($th);
-        }
-    }
+
     public function inserir()
     {
         global $conexao;
         try {
-            $sql = "INSERT INTO especialidade (
-                descricao
-            )   
-            VALUES (
-                '{$this->descricao}'
-            )";
-            mysqli_query($conexao, $sql);
+            $stmt = $conexao->prepare("INSERT INTO especialidade (descricao) VALUES (?)");
+            $stmt->bind_param('s', $this->descricao);
+            $stmt->execute();
             return true;
         } catch (\Throwable $th) {
+            return false;
         }
     }
+
+    public function alterar()
+    {
+        global $conexao;
+        try {
+            $stmt = $conexao->prepare(
+                "UPDATE especialidade SET descricao = ? WHERE id_especialidade = ?"
+            );
+            $stmt->bind_param('si', $this->descricao, $this->id_especialidade);
+            $stmt->execute();
+            return true;
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
+
     public function excluir()
     {
         global $conexao;
         try {
-            $sql = "DELETE FROM especialidade 
-                    WHERE id_especialidade = " . $this->id_especialidade;
-            mysqli_query($conexao, $sql);
+            $stmt = $conexao->prepare("DELETE FROM especialidade WHERE id_especialidade = ?");
+            $stmt->bind_param('i', $this->id_especialidade);
+            $stmt->execute();
             return true;
         } catch (\Throwable $th) {
-            print_pre($th);
+            return false;
         }
     }
 }

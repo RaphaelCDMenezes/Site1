@@ -1,8 +1,8 @@
-<script>
+﻿<script>
     var usuarioJs = ({
         fNovo: function() {
             $.ajax({
-                'url': '/src/controller/usuarioController.php?action=novo'
+                'url': '/Site1-main/src/controller/usuarioController.php?action=novo'
             }).done(function(dados) {
                 $('#layoutSidenav_content').html(dados);
             })
@@ -10,7 +10,7 @@
         },
         fVoltar: function() {
             $.ajax({
-                'url': '/src/controller/usuarioController.php?action=pesquisar'
+                'url': '/Site1-main/src/controller/usuarioController.php?action=pesquisar'
             }).done(function(dados) {
                 $('#layoutSidenav_content').html(dados);
             })
@@ -18,7 +18,7 @@
         },
         fSalvar: function() {
             $.ajax({
-                'url': '/src/controller/usuarioController.php',
+                'url': '/Site1-main/src/controller/usuarioController.php',
                 'method': 'post',
                 'data': $('#formUsuarioCreate').serialize()
             }).done(function(dados) {
@@ -27,7 +27,7 @@
         },
         fEditar: function(id_usuario) {
             $.ajax({
-                'url': '/src/controller/usuarioController.php',
+                'url': '/Site1-main/src/controller/usuarioController.php',
                 'data': {
                     'action': 'editar',
                     'id_usuario': id_usuario
@@ -37,9 +37,9 @@
             })
         },
         fExcluir: function(id_usuario) {
-            if (confirm('Deseja excluir o médico ' + id_usuario + '?')) {
+            if (confirm('Deseja excluir o paciente #' + id_usuario + '?')) {
                 $.ajax({
-                    'url': '/src/controller/usuarioController.php',
+                    'url': '/Site1-main/src/controller/usuarioController.php',
                     'data': {
                         'action': 'excluir',
                         'id_usuario': id_usuario

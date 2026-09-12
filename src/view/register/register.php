@@ -23,7 +23,16 @@ include_once('../../../lib/config.php');
                     <div class="col-lg-5">
                         <div class="card shadow-lg border-0 rounded-lg mt-5">
                             <div class="card-header">
-                                <h3 class="text-center font-weight-light my-4"><img src="/Img/Capa-hospital.fw.png" alt="CapaHospital" height="50px" width="50px" align="middle">Criar conta</h3>
+                                <h3 class="text-center font-weight-light my-4">
+                                    <div class="auth-logo">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+                                            <rect width="64" height="64" rx="12" fill="white" fill-opacity="0.2"/>
+                                            <path d="M32 10 L32 54 M14 32 L50 32" stroke="white" stroke-width="7" stroke-linecap="round"/>
+                                            <circle cx="32" cy="32" r="20" stroke="white" stroke-width="4" fill="none"/>
+                                        </svg>
+                                        Criar conta
+                                    </div>
+                                </h3>
                             </div>
                             <div class="card-body">
                                 <main>

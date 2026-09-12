@@ -8,30 +8,32 @@
             <div class="col-xl-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="fas fa-chart-area me-1"></i>
-                        Filtros
+                        <i class="fas fa-stethoscope me-1"></i> Filtros
                     </div>
                     <div class="card-body">
                         <form action="">
                             <?php include_once(__AGENDAMENTO_DIR__ . 'lib/alert.php') ?>
                             <button class="btn btn-secondary" type="button" onclick="especialidadeJs.fPesquisar()">Pesquisar</button>
-                            <button class="btn btn-secondary">Limpar</button>
+                            <button class="btn btn-secondary" type="button" onclick="especialidadeJs.fPesquisar()">Limpar</button>
                             <button class="btn btn-primary" type="button" onclick="especialidadeJs.fNovo()">Novo</button>
                         </form>
-                        <div id="divespecialidadeLista">
-                            <table class="table">
+                        <div class="table-responsive mt-3">
+                            <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th scope="col">Especialidade</th>
+                                        <th>#</th>
+                                        <th>Especialidade</th>
+                                        <th>Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($arrEspecialidades as $arr) { ?>
+                                    <?php if (!empty($arrEspecialidades)) foreach ($arrEspecialidades as $arr) { ?>
                                         <tr>
-                                            <td><?= $arr[1] ?></td>
+                                            <td><?= htmlspecialchars($arr['id_especialidade']) ?></td>
+                                            <td><?= htmlspecialchars($arr['descricao']) ?></td>
                                             <td>
-                                                <a href="javascript:void(0)" onclick="especialidadeJs.fEditar(<?= $arr[0] ?>)" >Editar</a>&nbsp;
-                                                <a href="javascript:void(0)" onclick="especialidadeJs.fExcluir(<?= $arr[0] ?>)" >Excluir</a>&nbsp;
+                                                <a href="javascript:void(0)" onclick="especialidadeJs.fEditar(<?= $arr['id_especialidade'] ?>)">Editar</a>&nbsp;
+                                                <a href="javascript:void(0)" onclick="especialidadeJs.fExcluir(<?= $arr['id_especialidade'] ?>)">Excluir</a>
                                             </td>
                                         </tr>
                                     <?php } ?>

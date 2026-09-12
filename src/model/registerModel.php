@@ -3,7 +3,7 @@
 namespace agendamento\register;
 
 /**
- * [Description Usuario]
+ * Modelo de Registro (auto-cadastro de paciente)
  */
 class register
 {
@@ -13,191 +13,55 @@ class register
     private $email;
     private $telefone;
     private $senha;
-    //private $id_especialidade;
 
-    /**
-     * Get the value of id_usuario
-     */ 
-    public function getId_usuario()
-    {
-        return $this->id_usuario;
-    }
+    public function getId_usuario() { return $this->id_usuario; }
+    public function getNome()       { return $this->nome; }
+    public function getCpf()        { return $this->cpf; }
+    public function getEmail()      { return $this->email; }
+    public function getTelefone()   { return $this->telefone; }
+    public function getSenha()      { return $this->senha; }
 
-    /**
-     * Set the value of id_usuario
-     *
-     * @return  self
-     */ 
-    public function setId_usuario($id_usuario)
-    {
-        $this->id_usuario = $id_usuario;
+    public function setId_usuario($v) { $this->id_usuario = $v; return $this; }
+    public function setNome($v)       { $this->nome = $v;       return $this; }
+    public function setCpf($v)        { $this->cpf = $v;        return $this; }
+    public function setEmail($v)      { $this->email = $v;      return $this; }
+    public function setTelefone($v)   { $this->telefone = $v;   return $this; }
+    public function setSenha($v)      { $this->senha = $v;      return $this; }
 
-        return $this;
-    }
-
-    /**
-     * Get the value of nome
-     */ 
-    public function getNome()
-    {
-        return $this->nome;
-    }
-
-    /**
-     * Set the value of nome
-     *
-     * @return  self
-     */ 
-    public function setNome($nome)
-    {
-        $this->nome = $nome;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of cpf
-     */
-    public function getCpf()
-    {
-        return $this->cpf;
-    }
-
-    /**
-     * Set the value of cpf
-     */
-    public function setCpf($cpf): self
-    {
-        $this->cpf = $cpf;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of email
-     */ 
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * Set the value of email
-     *
-     * @return  self
-     */ 
-    public function setEmail($email)
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of telefone
-     */ 
-    public function getTelefone()
-    {
-        return $this->telefone;
-    }
-
-    /**
-     * Set the value of telefone
-     *
-     * @return  self
-     */ 
-    public function setTelefone($telefone)
-    {
-        $this->telefone = $telefone;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of senha
-     */ 
-    public function getSenha()
-    {
-        return $this->senha;
-    }
-
-    /**
-     * Set the value of senha
-     *
-     * @return  self
-     */ 
-    public function setSenha($senha)
-    {
-        $this->senha = $senha;
-
-        return $this;
-    }
     public function inserir()
     {
         global $conexao;
         try {
-            $sql = "INSERT INTO usuario (
-                nome,
-                cpf,
-                email,
-                telefone,
-                senha
-            )   
-            VALUES (
-                '{$this->nome}',
-                '{$this->cpf}',
-                '{$this->email}',
-                '{$this->telefone}',
-                '{$this->senha}'
-            )";
-            mysqli_query($conexao, $sql);
+            $senhaHash = password_hash($this->senha, PASSWORD_DEFAULT);
+            $stmt = $conexao->prepare(
+                "INSERT INTO usuario (nome, cpf, email, telefone, senha) VALUES (?, ?, ?, ?, ?)"
+            );
+            $stmt->bind_param('sssss', $this->nome, $this->cpf, $this->email, $this->telefone, $senhaHash);
+            $stmt->execute();
             return true;
         } catch (\Throwable $th) {
+            return false;
         }
     }
-    public function alterar()
-    {
-        global $conexao;
-        try {
-            $sql = "UPDATE usuario 
-                    SET 
-                        cpf = '{$this->cpf}',
-                        email = '{$this->email}',
-                        telefone = '{$this->telefone}'
-                    WHERE id_usuario = " . $this->id_usuario;
-            mysqli_query($conexao, $sql);
-            return true;
-        } catch (\Throwable $th) {
-            print_pre($th);
-        }
-    }
-    public function excluir()
-    {
-        global $conexao;
-        try {
-            $sql = "DELETE FROM usuario 
-                    WHERE id_usuario = " . $this->id_usuario;
-            mysqli_query($conexao, $sql);
-            return true;
-        } catch (\Throwable $th) {
-            print_pre($th);
-        }
-    }
+
     public function listar()
     {
         global $conexao;
         try {
-            $sql = "select * from usuario where true";
             if ($this->id_usuario) {
-                $sql .= ' and id_usuario = ' . $this->id_usuario;
+                $stmt = $conexao->prepare("SELECT * FROM usuario WHERE id_usuario = ?");
+                $stmt->bind_param('i', $this->id_usuario);
+                $stmt->execute();
+                $recordset = $stmt->get_result();
+            } else {
+                $recordset = mysqli_query($conexao, "SELECT * FROM usuario");
             }
-
-            $recordset = mysqli_query($conexao, $sql);
-            return mysqli_fetch_all($recordset);
+            return mysqli_fetch_all($recordset, MYSQLI_ASSOC);
         } catch (\Throwable $th) {
-            //throw $th;
+            return [];
         }
     }
+
     function validar()
     {
         $arrMsg = [];
@@ -205,10 +69,14 @@ class register
             $arrMsg[] = 'Informe o nome';
         }
         if ($this->cpf == '') {
-            $arrMsg[] = 'Informe o cpf';
+            $arrMsg[] = 'Informe o CPF';
         }
-
+        if ($this->email == '') {
+            $arrMsg[] = 'Informe o e-mail';
+        }
+        if ($this->senha == '') {
+            $arrMsg[] = 'Informe a senha';
+        }
         return $arrMsg;
     }
-
 }

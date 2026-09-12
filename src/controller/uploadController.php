@@ -1,51 +1,46 @@
 <?php
 require_once('../../lib/config.php');
 
-$action = $_REQUEST['action'];
-$action = $_POST['action'] ? $_POST['action'] : $_GET['action'];
+$action = isset($_POST['action']) ? $_POST['action'] : (isset($_GET['action']) ? $_GET['action'] : 'pesquisar');
 
 switch ($action) {
-    case 'enviar' :
+    case 'enviar':
+        if (!isset($_FILES['foto'])) {
+            $arrMsgErro[] = 'Nenhum arquivo recebido';
+            break;
+        }
         switch ($_FILES['foto']['error']) {
             case UPLOAD_ERR_INI_SIZE:
-                $arrMsgErro[] = "The uploaded file exceeds the upload_max_filesize directive in php.ini";
-                break;
             case UPLOAD_ERR_FORM_SIZE:
-                $arrMsgErro[] = "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form";
+                $arrMsgErro[] = 'Arquivo muito grande';
                 break;
             case UPLOAD_ERR_PARTIAL:
-                $arrMsgErro[] = "The uploaded file was only partially uploaded";
+                $arrMsgErro[] = 'Upload incompleto';
                 break;
             case UPLOAD_ERR_NO_FILE:
-                $arrMsgErro[] = "Nenhum arquivo enviado";
+                $arrMsgErro[] = 'Nenhum arquivo enviado';
                 break;
             case UPLOAD_ERR_NO_TMP_DIR:
-                $arrMsgErro[] = "Missing a temporary folder";
-                break;
             case UPLOAD_ERR_CANT_WRITE:
-                $arrMsgErro[] = "Failed to write file to disk";
+                $arrMsgErro[] = 'Erro ao salvar o arquivo no servidor';
                 break;
-            case UPLOAD_ERR_EXTENSION:
-                $arrMsgErro[] = "File upload stopped by extension";
-                break;
-                
             default:
                 $arquivo_tmp = $_FILES['foto']['tmp_name'];
-                $arquivo = $_FILES['foto']['name'];
-                $tamanho = $_FILES['foto']['size'] / 1024;
+                $arquivo     = basename($_FILES['foto']['name']);
+                $tamanho     = $_FILES['foto']['size'] / 1024;
                 if (move_uploaded_file($arquivo_tmp, __AGENDAMENTO_DIR_UPLOAD__ . $arquivo)) {
-                    $arrMsgSucesso[] = 'Arquivo gravado com sucesso. Tamanho: ' .  number_format($tamanho, 2) . ' kb';
+                    $arrMsgSucesso[] = 'Arquivo enviado com sucesso. Tamanho: ' . number_format($tamanho, 2) . ' KB';
                 } else {
                     $arrMsgErro[] = 'Erro ao salvar arquivo';
                 }
-
                 break;
         }
         require_once(__AGENDAMENTO_DIR__ . 'src/view/upload/uploadCreate.php');
         require_once(__AGENDAMENTO_DIR__ . 'src/view/upload/uploadJs.php');
-
         break;
-    case 'pesquisar' :
+
+    case 'pesquisar':
+    default:
         require_once(__AGENDAMENTO_DIR__ . 'src/view/upload/uploadCreate.php');
         require_once(__AGENDAMENTO_DIR__ . 'src/view/upload/uploadJs.php');
         break;

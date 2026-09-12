@@ -18,7 +18,7 @@
                             <input type="hidden" name="id_usuario" value="<?= $objUsuario->getId_usuario() ?>">
                             <div class="mb-3">
                                 <label for="nome" class="form-label">Nome</label>
-                                <input type="text" class="form-control" name="nome" id="nome" placeholder="Nome" value="<?= $objUsuario->getNome ?>" <?= $objUsuario->getId_usuario() ? 'readonly' : '' ?>>
+                                <input type="text" class="form-control" name="nome" id="nome" placeholder="Nome" value="<?= htmlspecialchars($objUsuario->getNome()) ?>" <?= $objUsuario->getId_usuario() ? 'readonly' : '' ?>>
                             </div>
                             <div class="mb-3">
                                 <label for="cpf" class="form-label">CPF</label>

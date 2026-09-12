@@ -1,8 +1,8 @@
-<script>
+﻿<script>
     var loginJs = ({
         fSalvar: function() {
             $.ajax({
-                'url': '/src/controller/registerController.php',
+                'url': '/Site1-main/src/controller/registerController.php',
                 'method': 'post',
                 'data': $('#CriarLogin').serialize()
             }).done(function(dados) {

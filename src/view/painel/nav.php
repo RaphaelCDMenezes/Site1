@@ -1,6 +1,11 @@
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
     <!-- Navbar Brand-->
-    <a class="navbar-brand ps-3" href="">Masara</a>
+    <a class="navbar-brand ps-3 masara-logo" href="/Site1-main/src/view/painel">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+            <rect width="64" height="64" rx="12" fill="white" fill-opacity="0.15"/>
+            <path d="M32 10 L32 54 M14 32 L50 32" stroke="white" stroke-width="7" stroke-linecap="round"/>
+            <circle cx="32" cy="32" r="20" stroke="white" stroke-width="4" fill="none"/>
+        </svg> Masara</a>
     <!-- Sidebar Toggle-->
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
     <!-- Navbar Search-->
