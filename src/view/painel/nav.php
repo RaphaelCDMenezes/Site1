@@ -1,31 +1,47 @@
-<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-    <!-- Navbar Brand-->
-    <a class="navbar-brand ps-3 masara-logo" href="/Site1-main/src/view/painel">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-            <rect width="64" height="64" rx="12" fill="white" fill-opacity="0.15"/>
-            <path d="M32 10 L32 54 M14 32 L50 32" stroke="white" stroke-width="7" stroke-linecap="round"/>
-            <circle cx="32" cy="32" r="20" stroke="white" stroke-width="4" fill="none"/>
-        </svg> Masara</a>
-    <!-- Sidebar Toggle-->
-    <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
-    <!-- Navbar Search-->
-    <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+<nav class="sb-topnav navbar navbar-expand navbar-light">
+    <!-- Logo -->
+    <a class="masara-logo ps-1" href="/Site1-main/src/view/painel/">
+        <div class="logo-icon"><i class="fas fa-heartbeat"></i></div>
+        <span><?= __AGENDAMENTO_TITULO__ ?></span>
+    </a>
+
+    <!-- Toggle sidebar -->
+    <button id="sidebarToggle" class="ms-3"><i class="fas fa-bars"></i></button>
+
+    <!-- Busca -->
+    <form class="d-none d-md-flex ms-auto me-3" style="width:280px">
         <div class="input-group">
-            <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
-            <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+            <input class="form-control" type="text" placeholder="Search for..." aria-label="Buscar" />
+            <button class="btn btn-primary" type="button"><i class="fas fa-search"></i></button>
         </div>
     </form>
-    <!-- Navbar-->
-    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+
+    <!-- Usuário -->
+    <ul class="navbar-nav ms-md-0 me-2">
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+            <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" id="navbarDropdown"
+               href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <div style="width:32px;height:32px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:.85rem;">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="d-none d-md-inline" style="font-size:.83rem;font-weight:500;color:var(--gray-800)">
+                    <?= htmlspecialchars(isset($_SESSION['email']) ? explode('@', $_SESSION['email'])[0] : 'Usuário') ?>
+                </span>
+            </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="#!">Settings</a></li>
-                <li><a class="dropdown-item" href="#!">Activity Log</a></li>
                 <li>
-                    <hr class="dropdown-divider" />
+                    <div class="px-3 py-2 border-bottom" style="font-size:.78rem;">
+                        <div style="font-weight:600;color:var(--gray-800)"><?= htmlspecialchars(isset($_SESSION['email']) ? explode('@', $_SESSION['email'])[0] : '') ?></div>
+                        <div style="color:var(--gray-400)"><?= htmlspecialchars(isset($_SESSION['email']) ? $_SESSION['email'] : '') ?></div>
+                    </div>
                 </li>
-                <li><a class="dropdown-item" href="<?= __AGENDAMENTO_HTTP__ ?>src/controller/loginController.php?action=logout">Logout</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2 text-muted"></i>Configurações</a></li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                    <a class="dropdown-item text-danger" href="<?= __AGENDAMENTO_HTTP__ ?>src/controller/loginController.php?action=logout">
+                        <i class="fas fa-sign-out-alt me-2"></i>Sair
+                    </a>
+                </li>
             </ul>
         </li>
     </ul>

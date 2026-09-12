@@ -1,61 +1,91 @@
 <main>
-    <div class="container-fluid px-4">
-        <h1 class="mt-4">Médico</h1>
-        <ol class="breadcrumb mb-4">
-            <li class="breadcrumb-item active">Cadastro / Médico</li>
-        </ol>
-        <div class="row">
-            <div class="col-xl-12">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <i class="fas fa-chart-area me-1"></i>
-                        <?= $objMedico->getId_medico() ? 'Alterar' : 'Novo' ?> médico
-                    </div>
-                    <form id="formMedicoCreate" action="" onsubmit="return false" >
-                        <div class="card-body">
-                            <?php include_once(__AGENDAMENTO_DIR__ . 'lib/alert.php') ?>
-                            <input type="hidden" name="action" value="<?= $objMedico->getId_medico() ? 'alterar' : 'inserir' ?>">
-                            <input type="hidden" name="id_medico" value="<?= $objMedico->getId_medico() ?>">
-                            <div class="mb-3">
-                                <label for="nome" class="form-label">Nome:</label>
-                                <input type="text" class="form-control" name="nome" id="nome" placeholder="Nome" value="<?= $objMedico->getNome() ?>" <?= $objMedico->getId_medico() ? 'readonly' : '' ?>>
+<div class="container-fluid px-4">
+    <h1 class="mt-4"><?= $objMedico->getId_medico() ? 'Editar' : 'Novo' ?> Médico</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="javascript:void(0)" onclick="medicoJs.fVoltar()">Médicos</a></li>
+        <li class="breadcrumb-item active"><?= $objMedico->getId_medico() ? 'Editar' : 'Cadastrar' ?></li>
+    </ol>
+    <div class="row">
+        <div class="col-xl-8">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-user-md"></i>
+                    Dados do Médico
+                </div>
+                <form id="formMedicoCreate" action="" onsubmit="return false">
+                    <div class="card-body">
+                        <?php include_once(__AGENDAMENTO_DIR__ . 'lib/alert.php') ?>
+                        <input type="hidden" name="action" value="<?= $objMedico->getId_medico() ? 'alterar' : 'inserir' ?>">
+                        <input type="hidden" name="id_medico" value="<?= $objMedico->getId_medico() ?>">
+
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label class="form-label">Nome completo <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="nome" placeholder="Nome do médico"
+                                    value="<?= htmlspecialchars($objMedico->getNome()) ?>"
+                                    <?= $objMedico->getId_medico() ? 'readonly' : '' ?>>
                             </div>
-                            <div class="mb-3">
-                                <label for="crm" class="form-label">CRM:</label>
-                                <input type="text" class="form-control" name="crm" id="crm" placeholder="CRM" value="<?= $objMedico->getCrm() ?>">
+                            <div class="col-md-4">
+                                <label class="form-label">CRM <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="crm" placeholder="CRM-SP 000000"
+                                    value="<?= htmlspecialchars($objMedico->getCrm()) ?>">
                             </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">E-mail:</label>
-                                <input type="text" class="form-control" name="email" id="email" placeholder="E-mail" value="<?= $objMedico->getEmail() ?>">
+                            <div class="col-md-6">
+                                <label class="form-label">E-mail</label>
+                                <input type="email" class="form-control" name="email" placeholder="medico@email.com"
+                                    value="<?= htmlspecialchars($objMedico->getEmail()) ?>">
                             </div>
-                            <div class="mb-3">
-                                <label for="Telefone" class="form-label">Telefone:</label>
-                                <input type="text" class="form-control" name="telefone" id="telefone" placeholder="telefone" value="<?= $objMedico->getTelefone() ?>">
+                            <div class="col-md-6">
+                                <label class="form-label">Telefone</label>
+                                <input type="text" class="form-control" name="telefone" placeholder="(11) 99999-9999"
+                                    value="<?= htmlspecialchars($objMedico->getTelefone()) ?>">
                             </div>
-                            <div class="mb-3">
-                                <label for="senha" class="form-label">Senha:</label>
-                                <input type="password" class="form-control" name="senha" id="senha" placeholder="Senha" value="<?= $objMedico->getSenha() ?>">
+                            <?php if (!$objMedico->getId_medico()): ?>
+                            <div class="col-md-6">
+                                <label class="form-label">Senha</label>
+                                <input type="password" class="form-control" name="senha" placeholder="Senha de acesso">
                             </div>
-                            <div class="mb-3">
-                            <label for="especialidade" class="form-label">Especialidades:</label>
-                                <select class="list-group-item form-control" name="id_especialidade" id="id_especialidade" name="dados">
-                                    <option value="">Selecione</option>
-                                    <?php foreach ($arrEspecialidade as $itemEspecialidade) {?>
-                                        <option value="<?= $itemEspecialidade['id_especialidade'] ?>" <?= $objMedico->getId_especialidade() == $itemEspecialidade['id_especialidade']  ? 'selected' : '' ?> ><?= $itemEspecialidade['descricao'] ?></option>
-                                    <?php } ?>
+                            <?php endif; ?>
+                            <div class="col-md-6">
+                                <label class="form-label">Especialidade <span class="text-danger">*</span></label>
+                                <select class="form-select" name="id_especialidade">
+                                    <option value="">Selecione...</option>
+                                    <?php if (!empty($arrEspecialidade)) foreach ($arrEspecialidade as $esp): ?>
+                                        <option value="<?= $esp['id_especialidade'] ?>"
+                                            <?= $objMedico->getId_especialidade() == $esp['id_especialidade'] ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($esp['descricao']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
                                 </select>
                             </div>
-                        </div>
-                        <div class="card-footer">
-                            <div class="float-end">
-                                <button class="btn btn-secondary" onclick="medicoJs.fVoltar()">Voltar</button>
-                                <button id="medico-btn-limpar" class="btn btn-secondary" >Limpar</button>
-                                <button class="btn btn-primary" onclick="medicoJs.fSalvar()">Salvar</button>
+                            <div class="col-md-6">
+                                <label class="form-label">Data de Nascimento</label>
+                                <input type="date" class="form-control" name="dt_nascimento"
+                                    value="<?= htmlspecialchars($objMedico->getDt_nascimento()) ?>">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Empresa / Hospital</label>
+                                <input type="text" class="form-control" name="id_empresa" placeholder="Código da empresa"
+                                    value="<?= htmlspecialchars($objMedico->getId_empresa()) ?>">
                             </div>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex gap-2 justify-content-end">
+                            <button class="btn btn-secondary" onclick="medicoJs.fVoltar()">
+                                <i class="fas fa-arrow-left"></i> Voltar
+                            </button>
+                            <button id="medico-btn-limpar" class="btn btn-secondary">
+                                <i class="fas fa-eraser"></i> Limpar
+                            </button>
+                            <button class="btn btn-primary" onclick="medicoJs.fSalvar()">
+                                <i class="fas fa-save"></i> Salvar
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
 </main>

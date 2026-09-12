@@ -2,72 +2,91 @@
 $ignoraSessao = true;
 require_once('../../lib/config.php');
 
-include_once('database.php');
-
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : '';
-$email  = isset($_POST['email'])  ? trim($_POST['email'])  : '';
-$senha  = isset($_POST['senha'])  ? $_POST['senha']        : '';
+$perfil = isset($_POST['perfil'])    ? $_POST['perfil']    : '';
+$email  = isset($_POST['email'])     ? trim($_POST['email']) : '';
+$senha  = isset($_POST['senha'])     ? $_POST['senha']       : '';
 
 switch ($action) {
+
+    /* ── Exibe formulário de login filtrado por perfil ── */
+    case 'form':
+        $arrMsgErro = [];
+        require_once(__AGENDAMENTO_DIR__ . 'src/view/login/loginForm.php');
+        break;
+
+    /* ── Processa autenticação ── */
     case 'login':
         $arrMsgErro = [];
-        if ($email === '') {
-            $arrMsgErro[] = 'Informe o usuário';
-        }
-        if ($senha === '') {
-            $arrMsgErro[] = 'Informe a senha';
-        }
+
+        if ($email === '') $arrMsgErro[] = 'Informe o e-mail';
+        if ($senha === '') $arrMsgErro[] = 'Informe a senha';
 
         if (count($arrMsgErro) > 0) {
-            require_once(__AGENDAMENTO_DIR__ . 'src/view/login/login.php');
+            require_once(__AGENDAMENTO_DIR__ . 'src/view/login/loginForm.php');
             break;
         }
 
-        // Verifica médico via prepared statement
-        $stmtMedico = $conexao->prepare("SELECT id_medico, email, senha FROM medico WHERE email = ?");
-        $stmtMedico->bind_param('s', $email);
-        $stmtMedico->execute();
-        $resMedico = $stmtMedico->get_result();
+        $logado = false;
 
-        // Verifica usuário/paciente via prepared statement
-        $stmtUsuario = $conexao->prepare("SELECT id_usuario, email, senha FROM usuario WHERE email = ?");
-        $stmtUsuario->bind_param('s', $email);
-        $stmtUsuario->execute();
-        $resUsuario = $stmtUsuario->get_result();
-
-        if ($resMedico->num_rows === 1) {
-            $rowMedico = $resMedico->fetch_assoc();
-            if (password_verify($senha, $rowMedico['senha'])) {
+        if ($perfil === 'adm') {
+            $stmt = $conexao->prepare("SELECT id_adm, email, senha FROM adm WHERE email = ? AND ativo = 1");
+            $stmt->bind_param('s', $email);
+            $stmt->execute();
+            $row = $stmt->get_result()->fetch_assoc();
+            if ($row && password_verify($senha, $row['senha'])) {
                 session_regenerate_id(true);
-                $_SESSION['email']  = $email;
-                $_SESSION['perfil'] = 'medic';
-                header('Location: ' . __AGENDAMENTO_HTTP__ . 'src/view/painel');
-                exit;
-            } else {
-                $arrMsgErro[] = 'Login inválido';
+                $_SESSION['email']   = $email;
+                $_SESSION['perfil']  = 'adm';
+                $_SESSION['id_user'] = $row['id_adm'];
+                $logado = true;
             }
-        } elseif ($resUsuario->num_rows === 1) {
-            $rowUsuario = $resUsuario->fetch_assoc();
-            if (password_verify($senha, $rowUsuario['senha'])) {
+
+        } elseif ($perfil === 'medic') {
+            $stmt = $conexao->prepare("SELECT id_medico, email, senha FROM medico WHERE email = ?");
+            $stmt->bind_param('s', $email);
+            $stmt->execute();
+            $row = $stmt->get_result()->fetch_assoc();
+            if ($row && password_verify($senha, $row['senha'])) {
                 session_regenerate_id(true);
-                $_SESSION['email']  = $email;
-                $_SESSION['perfil'] = 'user';
-                header('Location: ' . __AGENDAMENTO_HTTP__ . 'src/view/painel');
-                exit;
-            } else {
-                $arrMsgErro[] = 'Login inválido';
+                $_SESSION['email']   = $email;
+                $_SESSION['perfil']  = 'medic';
+                $_SESSION['id_user'] = $row['id_medico'];
+                $logado = true;
+            }
+
+        } elseif ($perfil === 'user') {
+            $stmt = $conexao->prepare("SELECT id_usuario, email, senha FROM usuario WHERE email = ?");
+            $stmt->bind_param('s', $email);
+            $stmt->execute();
+            $row = $stmt->get_result()->fetch_assoc();
+            if ($row && password_verify($senha, $row['senha'])) {
+                session_regenerate_id(true);
+                $_SESSION['email']   = $email;
+                $_SESSION['perfil']  = 'user';
+                $_SESSION['id_user'] = $row['id_usuario'];
+                $logado = true;
             }
         } else {
-            $arrMsgErro[] = 'Login inválido';
+            $arrMsgErro[] = 'Perfil inválido';
         }
 
-        require_once(__AGENDAMENTO_DIR__ . 'src/view/login/login.php');
+        if ($logado) {
+            header('Location: ' . __AGENDAMENTO_HTTP__ . 'src/view/painel/');
+            exit;
+        }
+
+        $arrMsgErro[] = 'E-mail ou senha incorretos';
+        require_once(__AGENDAMENTO_DIR__ . 'src/view/login/loginForm.php');
         break;
 
+    /* ── Logout ── */
     case 'logout':
         sessaoLogout();
         break;
 
+    /* ── Tela inicial: seleção de perfil ── */
     default:
+        require_once(__AGENDAMENTO_DIR__ . 'src/view/login/login.php');
         break;
 }

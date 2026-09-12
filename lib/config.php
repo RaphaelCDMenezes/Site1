@@ -29,6 +29,9 @@ spl_autoload_register(function ($classe) {
         'agendamento\\usuario\\Usuario'             => __AGENDAMENTO_DIR__ . 'src/model/usuarioModel.php',
         'agendamento\\login\\Login'                 => __AGENDAMENTO_DIR__ . 'src/model/loginModel.php',
         'agendamento\\register\\register'           => __AGENDAMENTO_DIR__ . 'src/model/registerModel.php',
+        'agendamento\\consulta\\Consulta'           => __AGENDAMENTO_DIR__ . 'src/model/consultaModel.php',
+        'agendamento\\plano\\Plano'                 => __AGENDAMENTO_DIR__ . 'src/model/planoModel.php',
+        'agendamento\\adm\\Adm'                     => __AGENDAMENTO_DIR__ . 'src/model/admModel.php',
     ];
 
     if (isset($mapa[$classe])) {
